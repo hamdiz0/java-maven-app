@@ -16,7 +16,7 @@ def image_build() {
     }
 } 
 
-def deployApp() {
+def deploy() {
     echo 'deploying the application...'
 } 
 
