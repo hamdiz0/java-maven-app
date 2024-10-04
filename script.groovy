@@ -6,7 +6,7 @@ def jar_build() {
 def image_build() {
     echo "building the docker image..."
     withCredentials([usernamePassword(
-        credentialsId: 'docker-hub-repo', 
+        credentialsId: 'docker-repo', 
         usernameVariable: 'USER'
         passwordVariable: 'PASSWORD', 
         )]) {
