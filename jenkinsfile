@@ -1,0 +1,37 @@
+def gs
+pipeline {
+    agent any
+    tools{
+        maven "maven-3.9.9"
+    }
+    stages{
+        stage("load"){
+            steps{
+                scrip{
+                    gs = load "script.groovy"
+                }
+            }
+        }
+        stage("build jar"){
+            steps{
+                script{
+                    gs.jar_build()
+                }
+            }
+        }
+        stage("build image"){
+            steps{
+                script{
+                    gs.image_build()
+                }
+            }
+        }
+        stage("deploy image"){
+            steps{
+                script{
+                    gs.deploy()
+                }
+            }
+        }
+    }
+}
