@@ -8,7 +8,7 @@ def image_build() {
     withCredentials([usernamePassword(
         credentialsId: 'docker-repo', 
         usernameVariable: 'USER'
-        passwordVariable: 'PASSWORD', 
+        passwordVariable: 'PASSWORD'
         )]) {
         sh "docker build -t hamdiz0/java-maven-app:1.2 && \
         echo $PASSWORD | docker login -u $USER --password-stdin && \
