@@ -8,7 +8,7 @@ pipeline {
         stage("load"){
             steps{
                 scrip{
-                    gs = load "script.groovy"
+                    gs = load 'script.groovy'
                 }
             }
         }
