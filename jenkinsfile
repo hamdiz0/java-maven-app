@@ -30,7 +30,7 @@ pipeline {
                     gs.jar_build()
                 }
             }
-        }/*
+        }
         stage("build image"){
             steps{
                 script {
@@ -42,7 +42,7 @@ pipeline {
                     )
                 }
             }
-        }*/
+        }
         stage("deploy image"){
             steps {
                 script {
