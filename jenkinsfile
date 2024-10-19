@@ -1,0 +1,66 @@
+pipeline {
+    agent any
+    tools{
+        maven "maven-3.9.9"
+    }
+    stages{
+        stage("load script"){
+            steps {
+                script {
+                    gs = load "script.groovy"
+                }
+            }
+        }
+        stage('increment version'){
+            steps {
+                script {
+                    echo 'incrementing app version ...'
+                    sh 'mvn build-helper:parse-version versions:set \
+                    -DnewVersion="\\\${parsedVersion.majorVersion}.\\\${parsedVersion.nextMinorVersion}" \
+                    versions:commit'
+                    def match = readFile('pom.xml') =~ '<version>(.+)</version>'
+                    def version = match[0][1]
+                    env.IMAGE_VERSION = "$version"
+                }
+            }
+        }
+        stage("build jar"){
+            steps {
+                script {
+                    gs.jar_build()
+                }
+            }
+        }/*
+        stage("build image"){
+            steps{
+                script {
+                    gs.image_build(
+                        'hamdiz0/java-maven-app', // image name
+                        IMAGE_VERSION, // version
+                        'docker-repo', // credentailsID
+                        '.' // dockerfile location
+                    )
+                }
+            }
+        }*/
+        stage("deploy image"){
+            steps {
+                script {
+                    gs.deploy()
+                }
+            }
+        }
+        stage("push changes"){
+            steps {
+                script {
+                    gs.git_push(
+                        'github.com/hamdiz0/java-maven-app.git', //url without "https://"
+                        'github-api-hz0', //credentialsId
+                        "updated to version ${IMAGE_VERSION}", //commit message
+                        'main' //branch
+                    )
+                }
+            }
+        }
+    }
+}
