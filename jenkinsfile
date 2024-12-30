@@ -55,7 +55,7 @@ pipeline {
                 script {
                     gs.git_push(
                         'github.com/hamdiz0/java-maven-app.git', //url without "https://"
-                        'github-api-hz0', //credentialsId
+                        'github-api-token', //credentialsId
                         "updated to version ${IMAGE_VERSION}", //commit message
                         'main' //branch
                     )
