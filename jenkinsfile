@@ -1,12 +1,13 @@
 pipeline {
     agent any
-    tools{
-        maven "maven-3.9.9"
+    tools {
+        maven 'maven-3.9.9'
     }
     environment {
-        KUBECONFIG_PATH = 
+        KUBECONFIG_PATH = "/kubecfg/cfg"
     }
     stages{
+        
         stage("load script"){
             steps {
                 script {
@@ -14,6 +15,7 @@ pipeline {
                 }
             }
         }
+
         stage('increment version'){
             steps {
                 script {
@@ -29,6 +31,7 @@ pipeline {
                 }
             }
         }
+
         stage("build jar"){
             steps {
                 script {
@@ -36,6 +39,7 @@ pipeline {
                 }
             }
         }
+
         stage("build & push image"){
             steps{
                 script {
@@ -48,6 +52,7 @@ pipeline {
                 }
             }
         }
+
         stage("updated yaml files version"){
             steps {
                 script {
@@ -55,10 +60,11 @@ pipeline {
                         "k8s-manifests",            // yaml files and script location (same directory)
                         "change_version.sh",        // change version script name (.sh)
                         IMAGE_VERSION              
-                        )
+                    )
                 }
             }
         }
+
         stage("deploy"){
             steps {
                 script {
@@ -66,18 +72,19 @@ pipeline {
                         "k8s-manifests",            // yaml files location
                         "deploy.sh",                // deployment script name (.sh)
                         KUBECONFIG_PATH,            // kubeconfig absolute path in the jenkins container
-                        )
+                    )
                 }
             }
         }
+
         stage("push changes"){
             steps {
                 script {
                     gs.git_push(
-                        'github.com/hamdiz0/java-maven-app.git', //url without "https://"
-                        'github-api-token', //credentialsId
-                        "updated to version ${IMAGE_VERSION}", //commit message
-                        'main' //branch
+                        'github.com/hamdiz0/java-maven-app.git',    //url without "https://"
+                        'github-api-token',                         //credentialsId
+                        "updated to version ${IMAGE_VERSION}",      //commit message
+                        'main'                                      //branch
                     )
                 }
             }
