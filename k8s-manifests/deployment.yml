@@ -1,0 +1,29 @@
+---
+# jma-deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jma-deployment
+  labels:
+    name: jma-deployment
+    app: java-maven-app
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: jma-pod
+      app: java-maven-app
+  template:
+    metadata:
+      labels:
+        name: jma-pod
+        app: java-maven-app
+    spec:
+      containers:
+        - name : jma
+          image: hamdiz0/java-maven-app:latest
+          ports :
+          - containerPort: 8080
+          

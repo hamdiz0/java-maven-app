@@ -3,6 +3,9 @@ pipeline {
     tools{
         maven "maven-3.9.9"
     }
+    environment {
+        KUBECONFIG_PATH = 
+    }
     stages{
         stage("load script"){
             steps {
@@ -15,12 +18,14 @@ pipeline {
             steps {
                 script {
                     echo 'incrementing app version ...'
+                    // Increment minor version in pom.xml using Maven build helper plugin
                     sh 'mvn build-helper:parse-version versions:set \
                     -DnewVersion="\\\${parsedVersion.majorVersion}.\\\${parsedVersion.nextMinorVersion}" \
                     versions:commit'
+                    // Read the new version from pom.xml
                     def match = readFile('pom.xml') =~ '<version>(.+)</version>'
-                    def version = match[0][1]
-                    env.IMAGE_VERSION = "$version"
+                    def version = match[0][1]           // get the first match
+                    env.IMAGE_VERSION = "$version"      // set the version environment variable
                 }
             }
         }
@@ -31,22 +36,37 @@ pipeline {
                 }
             }
         }
-        stage("build image"){
+        stage("build & push image"){
             steps{
                 script {
                     gs.image_build(
-                        'hamdiz0/java-maven-app', // image name
-                        IMAGE_VERSION, // version
-                        'docker-repo', // credentailsID
-                        '.' // dockerfile location
+                        'hamdiz0/java-maven-app',   // image name
+                        IMAGE_VERSION,              // version
+                        'docker-repo',              // credentailsID
+                        '.'                         // dockerfile location
                     )
                 }
             }
         }
-        stage("deploy image"){
+        stage("updated yaml files version"){
             steps {
                 script {
-                    gs.deploy()
+                    gs.update_yaml_version(
+                        "k8s-manifests",            // yaml files and script location (same directory)
+                        "change_version.sh",        // change version script name (.sh)
+                        IMAGE_VERSION              
+                        )
+                }
+            }
+        }
+        stage("deploy"){
+            steps {
+                script {
+                    gs.deploy(
+                        "k8s-manifests",            // yaml files location
+                        "deploy.sh",                // deployment script name (.sh)
+                        KUBECONFIG_PATH,            // kubeconfig absolute path in the jenkins container
+                        )
                 }
             }
         }
