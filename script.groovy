@@ -11,9 +11,11 @@ def image_build(String imageName , String ver , String credId , String dockerfil
                 passwordVariable: "PASSWORD"
             )
     ]){
-        sh "docker build $dockerfilelocation -t $imageName:$ver "
+        sh "docker build $dockerfilelocation -t $imageName:$ver"
+        sh "docker build $dockerfilelocation -t $imageName:latest"
         sh "echo $PASSWORD | docker login -u $USER --password-stdin"
         sh "docker push $imageName:$ver"
+        sh "docker push $imageName:latest"
     }
 }
 
