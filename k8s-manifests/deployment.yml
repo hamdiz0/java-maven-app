@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name : jma
-          image: hamdiz0/java-maven-app:1.2
+          image: hamdiz0/java-maven-app:1.3
           ports :
           - containerPort: 8080
           
