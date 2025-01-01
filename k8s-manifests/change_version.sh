@@ -16,11 +16,6 @@ echo "changing k8s yaml files version ..."
 
 for file in "$DIR"/*.y*ml; do
     if [ -f "$file" ]; then
-        # skip postgres-deployment_svc.yml
-        if [[ $(basename "$file") == "postgres-deployment_svc.yml" ]]; then
-            echo "Skipping $file"
-            continue
-        fi
         sed -i "s|image:\([^:]*\):.*|image:\1:$version|" $file # update the version
         echo "$file updated"
     else

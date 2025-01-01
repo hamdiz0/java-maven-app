@@ -3,6 +3,19 @@ def jar_build() {
     echo 'building the application ...'
     sh 'mvn clean package'
 } 
+// increment the version
+def increment_version(){
+    echo 'incrementing app version ...'
+    // Increment minor version in pom.xml using Maven build helper plugin
+    sh 'mvn build-helper:parse-version versions:set \
+    -DnewVersion="\\\${parsedVersion.majorVersion}.\\\${parsedVersion.nextMinorVersion}" \
+    versions:commit'
+    // Read the new version from pom.xml
+    def match = readFile('pom.xml') =~ '<version>(.+)</version>'
+    def version = match[0][1]           // get the first match
+    env.IMAGE_VERSION = "$version"      // set the version environment variable
+}
+
 // build and push the docker image
 def image_build(String imageName , String ver , String credId , String dockerfilelocation) {
     withCredentials([
@@ -52,6 +65,7 @@ def git_push(String url , String credId , String commitMsg, String toBranch){
             passwordVariable:'TOKEN'
         )]){
         sh "git remote set-url origin https://${USER}:${TOKEN}@$url"
+        sh "git pull origin main --rebase"
         sh "git add ."
         sh "git commit -m \"${commitMsg}\"" 
         sh "git push origin HEAD:$toBranch"

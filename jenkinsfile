@@ -19,15 +19,7 @@ pipeline {
         stage('increment version'){
             steps {
                 script {
-                    echo 'incrementing app version ...'
-                    // Increment minor version in pom.xml using Maven build helper plugin
-                    sh 'mvn build-helper:parse-version versions:set \
-                    -DnewVersion="\\\${parsedVersion.majorVersion}.\\\${parsedVersion.nextMinorVersion}" \
-                    versions:commit'
-                    // Read the new version from pom.xml
-                    def match = readFile('pom.xml') =~ '<version>(.+)</version>'
-                    def version = match[0][1]           // get the first match
-                    env.IMAGE_VERSION = "$version"      // set the version environment variable
+                    gs.increment_version()
                 }
             }
         }
