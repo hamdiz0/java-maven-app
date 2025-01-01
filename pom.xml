@@ -29,11 +29,6 @@
 				<version>3.1.1</version>
 			</plugin>
 
-			<plugin>
-				<groupId>org.apche.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-			</plugin>
-
             <!-- to handle any Java version mismatch, add the following configuration for maven-compiler-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
